@@ -1,2 +1,5 @@
 # SMIS
-Database sesign
+Database design
+
+-Database design for SMIS
+-SMIS(STORE INFORMATION AND MANAGEMENT SYSTEM)

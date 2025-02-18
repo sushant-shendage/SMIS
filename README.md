@@ -9,9 +9,9 @@ SMIS Database is designed to efficiently manage store inventory and assist custo
 - **Customer Assistance:** Help customers make better decisions based on stock status and product specifications.  
 
 ## Technologies Used  
-- **Database:** MySQL / PostgreSQL / Any SQL-based DBMS  
-- **Backend:** Java / Node.js / Python (as required)  
-- **Frontend:** (If applicable)  
+- **Database:** MySQL  [completed]  
+- **Backend:** Spring Boot (Java-based )[development phase]
+- **Frontend:**  React  [development phase]
 
 ## Installation  
 1. Set up a database using the provided SQL schema.  

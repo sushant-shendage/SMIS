@@ -1,5 +1,10 @@
 # SMIS Database (Store Management & Information System) 🏪📊
 
+## Real-Life Problem Statement  
+In many retail stores, inventory management is still handled manually, leading to inefficiencies such as stock shortages, overstocking, and inaccurate tracking of products. Store managers often rely on outdated records, making it difficult to maintain an optimal stock level. Additionally, customers struggle to make informed purchasing decisions due to a lack of real-time product availability and detailed specifications.
+
+The **SMIS Database (Store Management & Information System)** aims to solve these issues by providing a **digital solution** that ensures seamless inventory tracking, automated stock updates, and enhanced customer assistance, ultimately improving the store's operational efficiency and shopping experience.In many retail stores, managing inventory manually leads to inefficiencies, stock shortages, and inaccurate tracking of products. Store managers often struggle with outdated records, leading to overstocking or understocking issues. Additionally, customers face difficulties in making purchasing decisions due to a lack of real-time product availability and feature details. This project aims to solve these challenges by providing a digital solution for seamless inventory management and enhanced customer experience.
+
 ## Overview  
 SMIS Database is designed to efficiently manage store inventory and assist customers in making informed purchasing decisions. This system ensures accurate stock tracking and provides product availability details to enhance the shopping experience. 🛒📦
 

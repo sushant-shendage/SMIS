@@ -8,7 +8,14 @@ SMIS Database is designed to efficiently manage store inventory and assist custo
 - 📄 **Product Information:** Store product details, including features and availability.  
 - 🤝 **Customer Assistance:** Help customers make better decisions based on stock status and product specifications.  
 
+## Advantages Over Existing Applications 🌟
+- ⚡ **Real-time Stock Tracking:** Ensures up-to-date inventory information.  
+- 🔍 **Enhanced Search & Filtering:** Customers can easily find desired products.  
+- 🔄 **Automated Inventory Updates:** Reduces manual errors and improves efficiency.  
+- 📊 **Data-Driven Insights:** Provides analytics for better business decision-making.  
+ 
 ## Technologies Used  
+This application is built using **Java Full-Stack Web Development**.  
 - 🗄 **Database:** MySQL ✅ [Completed]  
 - ⚙ **Backend:** Spring Boot (Java-based) 🚧 [Development Phase]  
 - 🎨 **Frontend:** React 🚧 [Development Phase]  
@@ -27,4 +34,4 @@ SMIS Database is designed to efficiently manage store inventory and assist custo
 - 🔐 Add role-based access control for security.  
 - 📲 Integrate barcode scanning for inventory updates.  
 
-🚀 Stay tuned for more features and improvements...!
+ 

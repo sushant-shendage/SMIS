@@ -143,6 +143,11 @@ GROUP BY phone
 HAVING total_purchases > 1;
 ```
 
+- **Check available stock for a specific model:**
+  ```sql
+  SELECT * FROM stock WHERE model_id = 'M12345';
+  ```
+
 These queries provide insights into inventory management, sales trends, customer purchasing behavior, and supplier transactions. They can be used for **business decision-making**, **performance tracking**, and **optimizing store operations**. 🚀📊
 
 

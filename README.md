@@ -162,9 +162,7 @@ WHERE stock.model_id = 'M12345';
 SELECT * FROM stock WHERE quantity < 10;
 ```
 
-## Sample Data
-
-Each table contains 20-30 records with real-world examples for testing and validation.
+ 
 
 
 

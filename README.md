@@ -42,6 +42,136 @@ This application is built using **Java Full-Stack Web Development**.
 
 
 
+# Store Management & Information System (SMIS) Database
+
+## Database Tables
+
+### 1. `stock` Table
+```sql
+CREATE TABLE stock (
+  stock_id VARCHAR(40) NOT NULL,
+  model_id VARCHAR(40) NOT NULL,
+  quantity INT CHECK (quantity >= 0),
+  PRIMARY KEY (stock_id, model_id)
+);
+```
+
+### 2. `product` Table
+```sql
+CREATE TABLE product (
+  model_id VARCHAR(70),
+  stock_id VARCHAR(70),
+  brand VARCHAR(70) NOT NULL,
+  price VARCHAR(70),
+  ram INT,
+  rom INT,
+  front_camera INT CHECK (front_camera > 0),
+  rare_camera INT CHECK (rare_camera > 0),
+  os VARCHAR(70),
+  battery_backup INT CHECK (battery_backup > 0),
+  processor VARCHAR(70),
+  refresh_rate INT CHECK (refresh_rate > 0),
+  brightness INT CHECK (brightness > 0),
+  body VARCHAR(70),
+  PRIMARY KEY (model_id, stock_id),
+  CONSTRAINT fk_product_stock FOREIGN KEY (stock_id, model_id) 
+  REFERENCES stock(stock_id, model_id)
+);
+```
+
+### 3. `purchase` Table
+```sql
+CREATE TABLE purchase (
+  purchaseDate DATE NOT NULL,
+  agentFullName VARCHAR(100) NOT NULL,
+  stock_id VARCHAR(70) NOT NULL,
+  model_id VARCHAR(70) NOT NULL,
+  amountPaid VARCHAR(100) NOT NULL,
+  purchaseTransactionId VARCHAR(50) UNIQUE NOT NULL,
+  purchaseInfoId VARCHAR(50) PRIMARY KEY,
+  CONSTRAINT fk_purchase_product FOREIGN KEY (stock_id, model_id) 
+  REFERENCES product(stock_id, model_id)
+);
+```
+
+### 4. `customer` Table
+```sql
+CREATE TABLE customer (
+  name VARCHAR(100) NOT NULL,
+  phone VARCHAR(15) PRIMARY KEY,
+  area VARCHAR(100) NOT NULL,
+  city VARCHAR(100) NOT NULL,
+  state VARCHAR(100) NOT NULL,
+  address VARCHAR(100) NOT NULL
+);
+```
+
+### 5. `sales` Table
+```sql
+CREATE TABLE sales (
+  sales_id VARCHAR(50) PRIMARY KEY,
+  phone VARCHAR(15),
+  stock_id VARCHAR(70),
+  model_id VARCHAR(70),
+  amountPaid VARCHAR(100) NOT NULL,
+  sales_date DATE NOT NULL,
+  CONSTRAINT fk_sales_customer FOREIGN KEY (phone) 
+  REFERENCES customer(phone)
+);
+```
+
+## Business Queries
+
+### 1. Retrieve All Available Products in Stock
+```sql
+SELECT * FROM product;
+```
+
+### 2. Search Product by Features (Example: RAM and Processor)
+```sql
+SELECT * FROM product 
+WHERE ram >= 8 AND processor LIKE '%Intel%';
+```
+
+### 3. Find All Purchases Made by an Agent
+```sql
+SELECT * FROM purchase 
+WHERE agentFullName = 'John Doe';
+```
+
+### 4. Retrieve All Sales Transactions
+```sql
+SELECT * FROM sales;
+```
+
+### 5. Find Customers Who Bought a Specific Model
+```sql
+SELECT customer.* FROM customer 
+JOIN sales ON customer.phone = sales.phone 
+WHERE sales.model_id = 'M12345';
+```
+
+### 6. Retrieve Stock Details for a Given Model
+```sql
+SELECT stock.* FROM stock 
+WHERE stock.model_id = 'M12345';
+```
+
+### 7. List of Products with Low Stock (Less than 10 Units)
+```sql
+SELECT * FROM stock WHERE quantity < 10;
+```
+
+## Sample Data
+
+Each table contains 20-30 records with real-world examples for testing and validation.
+
+
+
+
+
+
+
 # Business Queries for SMIS Database 📊
 
 The **Store Management & Information System (SMIS)** database allows for a variety of business queries that help in managing inventory, tracking sales, monitoring purchases, and understanding customer behavior. Below are some key queries that can be executed:

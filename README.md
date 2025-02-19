@@ -143,7 +143,8 @@ GROUP BY phone
 HAVING total_purchases > 1;
 ```
 
-- **Check available stock for a specific model:**
+
+### 13.Check available stock for a specific model:**
   ```sql
   SELECT * FROM stock WHERE model_id = 'M12345';
   ```

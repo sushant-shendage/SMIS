@@ -112,7 +112,7 @@ AND ram = 8
 AND price < 50000;
 
 
-## Conclusion  
+# Conclusion  
 
 This database project provides a **digital store management system** that enhances stock tracking, product management, and transaction recording. By digitizing store information, it enables **customers to make faster and easier decisions** based on product availability and features.  
 

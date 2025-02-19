@@ -42,242 +42,75 @@ This application is built using **Java Full-Stack Web Development**.
 
 
 
-# Store Management & Information System (SMIS) Database
-
-## Database Tables
-
-### 1. `stock` Table
+## 1. Total Sales Amount for 2025
 ```sql
-CREATE TABLE stock (
-  stock_id VARCHAR(40) NOT NULL,
-  model_id VARCHAR(40) NOT NULL,
-  quantity INT CHECK (quantity >= 0),
-  PRIMARY KEY (stock_id, model_id)
-);
+SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_sales_2025
+FROM sales
+WHERE YEAR(sales_date) = 2025;
 ```
 
-### 2. `product` Table
+## 2. Total Purchase Amount for 2025
 ```sql
-CREATE TABLE product (
-  model_id VARCHAR(70),
-  stock_id VARCHAR(70),
-  brand VARCHAR(70) NOT NULL,
-  price VARCHAR(70),
-  ram INT,
-  rom INT,
-  front_camera INT CHECK (front_camera > 0),
-  rare_camera INT CHECK (rare_camera > 0),
-  os VARCHAR(70),
-  battery_backup INT CHECK (battery_backup > 0),
-  processor VARCHAR(70),
-  refresh_rate INT CHECK (refresh_rate > 0),
-  brightness INT CHECK (brightness > 0),
-  body VARCHAR(70),
-  PRIMARY KEY (model_id, stock_id),
-  CONSTRAINT fk_product_stock FOREIGN KEY (stock_id, model_id) 
-  REFERENCES stock(stock_id, model_id)
-);
+SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_purchase_2025
+FROM purchase
+WHERE YEAR(purchaseDate) = 2025;
 ```
 
-### 3. `purchase` Table
+## 3. Net Profit/Loss Calculation
 ```sql
-CREATE TABLE purchase (
-  purchaseDate DATE NOT NULL,
-  agentFullName VARCHAR(100) NOT NULL,
-  stock_id VARCHAR(70) NOT NULL,
-  model_id VARCHAR(70) NOT NULL,
-  amountPaid VARCHAR(100) NOT NULL,
-  purchaseTransactionId VARCHAR(50) UNIQUE NOT NULL,
-  purchaseInfoId VARCHAR(50) PRIMARY KEY,
-  CONSTRAINT fk_purchase_product FOREIGN KEY (stock_id, model_id) 
-  REFERENCES product(stock_id, model_id)
-);
+SELECT 
+    ( 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
+         FROM sales 
+         WHERE YEAR(sales_date) = 2025) 
+        - 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
+         FROM purchase 
+         WHERE YEAR(purchaseDate) = 2025) 
+    ) AS net_profit_loss;
 ```
 
-### 4. `customer` Table
+## 4. Stock-wise Total Sales & Total Purchase Amount
 ```sql
-CREATE TABLE customer (
-  name VARCHAR(100) NOT NULL,
-  phone VARCHAR(15) PRIMARY KEY,
-  area VARCHAR(100) NOT NULL,
-  city VARCHAR(100) NOT NULL,
-  state VARCHAR(100) NOT NULL,
-  address VARCHAR(100) NOT NULL
-);
+SELECT 
+    p.stock_id, 
+    SUM(CAST(s.amountPaid AS DECIMAL(10,2))) AS total_sales_amount,
+    SUM(CAST(p.amountPaid AS DECIMAL(10,2))) AS total_purchase_amount
+FROM purchase p
+LEFT JOIN sales s ON p.stock_id = s.stock_id
+GROUP BY p.stock_id;
 ```
 
-### 5. `sales` Table
+## 5. Most Sold Product Brand in 2025
 ```sql
-CREATE TABLE sales (
-  sales_id VARCHAR(50) PRIMARY KEY,
-  phone VARCHAR(15),
-  stock_id VARCHAR(70),
-  model_id VARCHAR(70),
-  amountPaid VARCHAR(100) NOT NULL,
-  sales_date DATE NOT NULL,
-  CONSTRAINT fk_sales_customer FOREIGN KEY (phone) 
-  REFERENCES customer(phone)
-);
+SELECT p.brand
+FROM sales s
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id
+WHERE YEAR(s.sales_date) = 2025
+GROUP BY p.brand
+ORDER BY COUNT(*) DESC
+LIMIT 1;
 ```
 
-## Business Queries
-
-### 1. Retrieve All Available Products in Stock
+## 6. Least Sold Product Category in 2025
 ```sql
-SELECT * FROM product;
-```
-
-### 2. Search Product by Features (Example: RAM and Processor)
-```sql
-SELECT * FROM product 
-WHERE ram >= 8 AND processor LIKE '%Intel%';
-```
-
-### 3. Find All Purchases Made by an Agent
-```sql
-SELECT * FROM purchase 
-WHERE agentFullName = 'John Doe';
-```
-
-### 4. Retrieve All Sales Transactions
-```sql
-SELECT * FROM sales;
-```
-
-### 5. Find Customers Who Bought a Specific Model
-```sql
-SELECT customer.* FROM customer 
-JOIN sales ON customer.phone = sales.phone 
-WHERE sales.model_id = 'M12345';
-```
-
-### 6. Retrieve Stock Details for a Given Model
-```sql
-SELECT stock.* FROM stock 
-WHERE stock.model_id = 'M12345';
-```
-
-### 7. List of Products with Low Stock (Less than 10 Units)
-```sql
-SELECT * FROM stock WHERE quantity < 10;
-```
-
- 
-
-
-
-
-
-
-
-# Business Queries for SMIS Database 📊
-
-The **Store Management & Information System (SMIS)** database allows for a variety of business queries that help in managing inventory, tracking sales, monitoring purchases, and understanding customer behavior. Below are some key queries that can be executed:
-
-## 📦 Inventory & Stock Management Queries  
-
-### 1. Check Available Stock for Each Product  
-```sql
-SELECT stock_id, model_id, quantity FROM stock WHERE quantity > 0;
-```
-
-### 2. List of Out-of-Stock Products  
-```sql
-SELECT stock_id, model_id FROM stock WHERE quantity = 0;
-```
-
-### 3. Total Stock Value by Product  
-```sql
-SELECT p.model_id, p.brand, SUM(s.quantity * p.price) AS total_value  
-FROM stock s  
-JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
-GROUP BY p.model_id, p.brand;
-```
-
-## 🛍 Sales & Customer Analysis Queries  
-
-### 4. Total Sales Amount for a Given Period  
-```sql
-SELECT SUM(amountPaid) AS total_sales  
-FROM sales  
-WHERE sales_date BETWEEN '2025-01-01' AND '2025-01-31';
-```
-
-### 5. Top 5 Customers by Purchase Amount  
-```sql
-SELECT c.name, SUM(s.amountPaid) AS total_spent  
-FROM sales s  
-JOIN customer c ON s.phone = c.phone  
-GROUP BY c.name  
-ORDER BY total_spent DESC  
-LIMIT 5;
-```
-
-### 6. Products Purchased by a Specific Customer  
-```sql
-SELECT s.phone, p.brand, p.model_id, s.amountPaid, s.sales_date  
+SELECT p.stock_id  
 FROM sales s  
 JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
-WHERE s.phone = '9876543210';
+WHERE YEAR(s.sales_date) = 2025  
+GROUP BY p.stock_id  
+ORDER BY COUNT(*) ASC  
+LIMIT 1;
 ```
 
-## 🛒 Purchase & Supplier Queries  
-
-### 7. Total Purchases from a Specific Supplier  
+## 7. Available Smartphones with 8GB RAM and Price Below 50,000
 ```sql
-SELECT agentFullName, SUM(amountPaid) AS total_purchases  
-FROM purchase  
-WHERE agentFullName = 'Supplier A'  
-GROUP BY agentFullName;
-```
+SELECT *  
+FROM product  
+WHERE stock_id = 'SMARTPHONE'  
+AND ram = 8  
+AND price < 50000;
 
-### 8. Recent Purchases (Last 30 Days)  
-```sql
-SELECT * FROM purchase  
-WHERE purchaseDate >= CURDATE() - INTERVAL 30 DAY;
-```
-
-### 9. Purchase History for a Specific Product  
-```sql
-SELECT * FROM purchase  
-WHERE model_id = 'M12345';
-```
-
-## 📈 Business Insights Queries  
-
-### 10. Best-Selling Products  
-```sql
-SELECT p.brand, p.model_id, COUNT(s.sales_id) AS total_sales  
-FROM sales s  
-JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
-GROUP BY p.brand, p.model_id  
-ORDER BY total_sales DESC  
-LIMIT 5;
-```
-
-### 11. Monthly Revenue Trend  
-```sql
-SELECT DATE_FORMAT(sales_date, '%Y-%m') AS month, SUM(amountPaid) AS total_revenue  
-FROM sales  
-GROUP BY month  
-ORDER BY month;
-```
-
-### 12. Customers Who Have Made Multiple Purchases  
-```sql
-SELECT phone, COUNT(sales_id) AS total_purchases  
-FROM sales  
-GROUP BY phone  
-HAVING total_purchases > 1;
-```
-
-
-### 13.Check available stock for a specific model:**
-  ```sql
-  SELECT * FROM stock WHERE model_id = 'M12345';
-  ```
-
-These queries provide insights into inventory management, sales trends, customer purchasing behavior, and supplier transactions. They can be used for **business decision-making**, **performance tracking**, and **optimizing store operations**. 🚀📊
 
 ## Conclusion  
 

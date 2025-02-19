@@ -39,4 +39,113 @@ This application is built using **Java Full-Stack Web Development**.
 - 🔐 Add role-based access control for security.  
 - 📲 Integrate barcode scanning for inventory updates.  
 
+
+
+
+# Business Queries for SMIS Database 📊
+
+The **Store Management & Information System (SMIS)** database allows for a variety of business queries that help in managing inventory, tracking sales, monitoring purchases, and understanding customer behavior. Below are some key queries that can be executed:
+
+## 📦 Inventory & Stock Management Queries  
+
+### 1. Check Available Stock for Each Product  
+```sql
+SELECT stock_id, model_id, quantity FROM stock WHERE quantity > 0;
+```
+
+### 2. List of Out-of-Stock Products  
+```sql
+SELECT stock_id, model_id FROM stock WHERE quantity = 0;
+```
+
+### 3. Total Stock Value by Product  
+```sql
+SELECT p.model_id, p.brand, SUM(s.quantity * p.price) AS total_value  
+FROM stock s  
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
+GROUP BY p.model_id, p.brand;
+```
+
+## 🛍 Sales & Customer Analysis Queries  
+
+### 4. Total Sales Amount for a Given Period  
+```sql
+SELECT SUM(amountPaid) AS total_sales  
+FROM sales  
+WHERE sales_date BETWEEN '2025-01-01' AND '2025-01-31';
+```
+
+### 5. Top 5 Customers by Purchase Amount  
+```sql
+SELECT c.name, SUM(s.amountPaid) AS total_spent  
+FROM sales s  
+JOIN customer c ON s.phone = c.phone  
+GROUP BY c.name  
+ORDER BY total_spent DESC  
+LIMIT 5;
+```
+
+### 6. Products Purchased by a Specific Customer  
+```sql
+SELECT s.phone, p.brand, p.model_id, s.amountPaid, s.sales_date  
+FROM sales s  
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
+WHERE s.phone = '9876543210';
+```
+
+## 🛒 Purchase & Supplier Queries  
+
+### 7. Total Purchases from a Specific Supplier  
+```sql
+SELECT agentFullName, SUM(amountPaid) AS total_purchases  
+FROM purchase  
+WHERE agentFullName = 'Supplier A'  
+GROUP BY agentFullName;
+```
+
+### 8. Recent Purchases (Last 30 Days)  
+```sql
+SELECT * FROM purchase  
+WHERE purchaseDate >= CURDATE() - INTERVAL 30 DAY;
+```
+
+### 9. Purchase History for a Specific Product  
+```sql
+SELECT * FROM purchase  
+WHERE model_id = 'M12345';
+```
+
+## 📈 Business Insights Queries  
+
+### 10. Best-Selling Products  
+```sql
+SELECT p.brand, p.model_id, COUNT(s.sales_id) AS total_sales  
+FROM sales s  
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
+GROUP BY p.brand, p.model_id  
+ORDER BY total_sales DESC  
+LIMIT 5;
+```
+
+### 11. Monthly Revenue Trend  
+```sql
+SELECT DATE_FORMAT(sales_date, '%Y-%m') AS month, SUM(amountPaid) AS total_revenue  
+FROM sales  
+GROUP BY month  
+ORDER BY month;
+```
+
+### 12. Customers Who Have Made Multiple Purchases  
+```sql
+SELECT phone, COUNT(sales_id) AS total_purchases  
+FROM sales  
+GROUP BY phone  
+HAVING total_purchases > 1;
+```
+
+These queries provide insights into inventory management, sales trends, customer purchasing behavior, and supplier transactions. They can be used for **business decision-making**, **performance tracking**, and **optimizing store operations**. 🚀📊
+
+
+
+
  

@@ -263,6 +263,9 @@ LIMIT 1;
 |----------|
 | LAPTOP   |
 ```sql
+```
+### 3.8  feature wise product item
+```
 SELECT *
 FROM product
 WHERE stock_id = 'SMARTPHONE' 

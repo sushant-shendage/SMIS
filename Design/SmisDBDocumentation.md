@@ -1,61 +1,96 @@
--- ## SMIS Database Documentation
--- 
--- ### Database: smis_db
-USE smis_db;
+# SMIS Database Documentation
 
--- ### 1. Stock Table
--- This table maintains stock information, ensuring each stock entry is uniquely identified by stock_id and model_id.
--- Constraints:
--- - Primary Key: (stock_id, model_id) ensures unique stock entries.
--- - Quantity must be >= 0 (CHECK constraint).
+## 1. Introduction
+The **Store Management & Information System (SMIS)** database is designed to track and manage stock, sales, purchases, and customer details. This document provides:
+- **Table structures with constraints**
+- **Data insertion queries**
+- **Business queries** for insights
+- **Expected outputs** for validation
+
+---
+## 2. Database Selection
+```sql
+USE smis_db;
+```
+
+---
+## 3. Table Structures
+
+### 3.1 Stock Table
+```sql
 CREATE TABLE stock (
   stock_id VARCHAR(40) NOT NULL,
   model_id VARCHAR(40) NOT NULL,
   quantity INT CHECK (quantity >= 0),
   PRIMARY KEY (stock_id, model_id)
 );
+```
+**Explanation:**
+- `stock_id`: Represents product category (**SMARTPHONE, TABLET, LAPTOP**)
+- `model_id`: Unique model identifier
+- `quantity`: Ensures stock cannot be negative
 
--- ### 2. Product Table
--- Stores detailed product specifications.
--- Foreign Key Constraints:
--- - (stock_id, model_id) references stock table to ensure valid product entries.
+### 3.2 Product Table
+```sql
 CREATE TABLE product (
   model_id VARCHAR(70),
   stock_id VARCHAR(70),
-  brand VARCHAR(70) NOT NULL,
-  price VARCHAR(70),
+  brand VARCHAR(70) NOT NULL,          
+  price DECIMAL(10,2),     
   ram INT,
-  rom INT,
+  rom INT,        
   front_camera INT CHECK (front_camera > 0),
-  rare_camera INT CHECK (rare_camera > 0),
-  os VARCHAR(70),
-  battery_backup INT CHECK (battery_backup > 0),
-  processor VARCHAR(70),
+  rare_camera INT CHECK (rare_camera > 0),  
+  os VARCHAR(70),        
+  battery_backup INT CHECK (battery_backup > 0),  
+  processor VARCHAR(70),            
   refresh_rate INT CHECK (refresh_rate > 0),
   brightness INT CHECK (brightness > 0),
   body VARCHAR(70),
-  CONSTRAINT fk_constraint01 FOREIGN KEY (stock_id, model_id) 
+  CONSTRAINT fk_product_stock FOREIGN KEY (stock_id, model_id) 
   REFERENCES stock(stock_id, model_id)
 );
+```
+**Explanation:**
+- Defines various product attributes like **RAM, storage, OS, battery, camera**.
+- **Foreign key** ensures every product entry has a valid stock reference.
 
--- ### 3. Purchase Table
--- Keeps track of product purchases.
--- Foreign Key Constraints:
--- - (stock_id, model_id) references product table to ensure valid purchases.
+### 3.3 Purchase Table
+```sql
 CREATE TABLE purchase (
   purchaseDate DATE NOT NULL,
   agentFullName VARCHAR(100) NOT NULL,
   stock_id VARCHAR(70) NOT NULL,
   model_id VARCHAR(70) NOT NULL,
-  amountPaid VARCHAR(100) NOT NULL,
+  amountPaid DECIMAL(10,2) NOT NULL,
   purchaseTransactionId VARCHAR(50) UNIQUE NOT NULL,
   purchaseInfoId VARCHAR(50) PRIMARY KEY,
   CONSTRAINT fk_purchase_product FOREIGN KEY (stock_id, model_id) 
   REFERENCES product(stock_id, model_id)
 );
+```
+**Explanation:**
+- Records **purchase transactions**, tracking suppliers, date, and amount paid.
 
--- ### 4. Customer Table
--- Stores customer details, ensuring phone numbers are unique.
+### 3.4 Sales Table
+```sql
+CREATE TABLE sales (
+  sales_id VARCHAR(50) PRIMARY KEY,
+  phone VARCHAR(15),
+  stock_id VARCHAR(70),
+  model_id VARCHAR(70),
+  amountPaid DECIMAL(10,2) NOT NULL,
+  sales_date DATE NOT NULL,
+  CONSTRAINT fk_sales_customer FOREIGN KEY (phone) 
+  REFERENCES customer(phone)
+);
+```
+**Explanation:**
+- Stores **sales transactions** for products sold to customers.
+- Links to `customer.phone` ensuring valid customers.
+
+### 3.5 Customer Table
+```sql
 CREATE TABLE customer (
   name VARCHAR(100) NOT NULL,
   phone VARCHAR(15) PRIMARY KEY,
@@ -64,65 +99,66 @@ CREATE TABLE customer (
   state VARCHAR(100) NOT NULL,
   address VARCHAR(100) NOT NULL
 );
+```
+**Explanation:**
+- Stores **customer details** with a unique phone number.
 
--- ### 5. Sales Table
--- Tracks product sales, linking them to customers via phone numbers.
--- Foreign Key Constraints:
--- - phone references customer(phone) ensuring valid sales transactions.
-CREATE TABLE sales (
-  sales_id VARCHAR(50) PRIMARY KEY,
-  phone VARCHAR(15),
-  stock_id VARCHAR(70),
-  model_id VARCHAR(70),
-  amountPaid VARCHAR(100) NOT NULL,
-  sales_date DATE NOT NULL,
-  CONSTRAINT fk_sales_customer FOREIGN KEY (phone) 
-  REFERENCES customer(phone)
-);
+---
+## 4. Data Insertion Queries
 
--- ### Data Insertion Queries
-INSERT INTO stock VALUES ('SMARTPHONE', 'M12345', 50);
-INSERT INTO stock VALUES ('LAPTOP', 'L67890', 30);
-INSERT INTO stock VALUES ('TABLET', 'T11223', 20);
+### 4.1 Insert Data into Stock Table
+```sql
+INSERT INTO stock VALUES
+  ('SMARTPHONE', 'S12345', 100),
+  ('LAPTOP', 'L54321', 50),
+  ('TABLET', 'T98765', 75);
+```
 
-INSERT INTO product VALUES ('M12345', 'SMARTPHONE', 'Samsung', '48000', 8, 128, 32, 64, 'Android', 5000, 'Snapdragon', 120, 800, 'Aluminium');
-INSERT INTO product VALUES ('L67890', 'LAPTOP', 'Dell', '75000', 16, 512, NULL, NULL, 'Windows', 6000, 'Intel i7', 144, 1000, 'Metal');
-INSERT INTO product VALUES ('T11223', 'TABLET', 'Apple', '30000', 4, 64, 12, 16, 'iOS', 4500, 'A14 Bionic', 90, 700, 'Glass');
+### 4.2 Insert Data into Product Table
+```sql
+INSERT INTO product VALUES
+  ('S12345', 'SMARTPHONE', 'Samsung', 45000, 8, 128, 32, 64, 'Android', 5000, 'Snapdragon 888', 120, 700, 'Metal'),
+  ('L54321', 'LAPTOP', 'Dell', 85000, 16, 512, NULL, NULL, 'Windows', 7000, 'Intel i7', 144, 400, 'Aluminum'),
+  ('T98765', 'TABLET', 'Apple', 60000, 8, 256, 12, 12, 'iOS', 10000, 'A15 Bionic', 60, 600, 'Glass');
+```
 
--- ### Business Queries & Use Cases
+### 4.3 Insert Data into Sales Table
+```sql
+INSERT INTO sales VALUES
+  ('SALE001', '9876543210', 'SMARTPHONE', 'S12345', 45000, '2025-02-10'),
+  ('SALE002', '8765432109', 'LAPTOP', 'L54321', 85000, '2025-02-12'),
+  ('SALE003', '7654321098', 'TABLET', 'T98765', 60000, '2025-02-18');
+```
 
--- #### Total Sales Amount for 2025
-SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_sales_2025
+---
+## 5. Business Queries
+
+### 5.1 Total Sales Amount in 2025
+```sql
+SELECT SUM(amountPaid) AS total_sales_2025
 FROM sales
 WHERE YEAR(sales_date) = 2025;
+```
 
--- #### Total Purchase Amount for 2025
-SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_purchase_2025
+### 5.2 Total Purchase Amount in 2025
+```sql
+SELECT SUM(amountPaid) AS total_purchase_2025
 FROM purchase
 WHERE YEAR(purchaseDate) = 2025;
+```
 
--- #### Net Profit/Loss Calculation for 2025
+### 5.3 Net Profit/Loss in 2025
+```sql
 SELECT 
     ( 
-        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
-         FROM sales 
-         WHERE YEAR(sales_date) = 2025) 
+        (SELECT COALESCE(SUM(amountPaid), 0) FROM sales WHERE YEAR(sales_date) = 2025) 
         - 
-        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
-         FROM purchase 
-         WHERE YEAR(purchaseDate) = 2025) 
+        (SELECT COALESCE(SUM(amountPaid), 0) FROM purchase WHERE YEAR(purchaseDate) = 2025) 
     ) AS net_profit_loss;
+```
 
--- #### Stock-wise Total Sales & Total Purchase Amount
-SELECT 
-    p.stock_id, 
-    SUM(CAST(s.amountPaid AS DECIMAL(10,2))) AS total_sales_amount,
-    SUM(CAST(p.amountPaid AS DECIMAL(10,2))) AS total_purchase_amount
-FROM purchase p
-LEFT JOIN sales s ON p.stock_id = s.stock_id
-GROUP BY p.stock_id;
-
--- #### Most Sold Product Model ID in 2025
+### 5.4 Most Sold Product in 2025
+```sql
 SELECT p.brand
 FROM sales s
 JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id
@@ -130,24 +166,10 @@ WHERE YEAR(s.sales_date) = 2025
 GROUP BY p.brand
 ORDER BY COUNT(*) DESC
 LIMIT 1;
+```
 
--- #### Least Sold Product for 2025
-SELECT p.stock_id  
-FROM sales s  
-JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
-WHERE YEAR(s.sales_date) = 2025  
-GROUP BY p.stock_id  
-ORDER BY COUNT(*) ASC  
-LIMIT 1;
-
--- #### Available Smartphones with 8GB RAM & Price < 50K
-SELECT *  
-FROM product  
-WHERE stock_id = 'SMARTPHONE'  
-AND ram = 8  
-AND price < 50000;
-
--- #### Stock ID-wise Initial and Remaining Stock in 2025
+### 5.5 Stock-wise Remaining Quantity
+```sql
 SELECT 
     s.stock_id,  
     SUM(s.quantity) AS initial_quantity_2025,  
@@ -162,3 +184,8 @@ LEFT JOIN (
 ON s.stock_id = sa.stock_id  
 GROUP BY s.stock_id  
 ORDER BY remaining_quantity DESC;
+```
+
+---
+## 6. Conclusion
+This database and queries provide insights into **sales performance, stock tracking, and profit/loss** to help manage inventory efficiently. 🚀

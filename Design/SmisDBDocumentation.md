@@ -1,4 +1,4 @@
-# Store Management & Information System (SMIS) Database Documentation
+ # Store Management & Information System (SMIS) Database Documentation
 
 ## 1. Database Creation
 

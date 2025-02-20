@@ -57,7 +57,7 @@ CREATE TABLE product (
 );
 
 INSERT INTO product (model_id, stock_id, brand, price, ram, rom, front_camera, rare_camera, os, battery_backup, processor, refresh_rate, brightness, body) VALUES
-('MDL001', 'LAPTOP', 'Dell', '78000', 16, 512, NULL, NULL, 'Windows', 10, 'Intel i7', 144, 500, 'Metal'),
+('MDL001', 'LAPTOP', 'Samsung', '655000', 16, 512, NULL, NULL, 'Windows', 10, 'Intel i7', 144, 500, 'Metal'),
 ('MDL002', 'LAPTOP', 'HP', '72000', 8, 512, NULL, NULL, 'Windows', 12, 'Intel i5', 120, 450, 'Plastic'),
 ('MDL007', 'LAPTOP', 'Asus', '68000', 16, 256, NULL, NULL, 'Windows', 8, 'Ryzen 7', 144, 400, 'Metal');
 ```
@@ -116,7 +116,7 @@ CREATE TABLE sales (
 );
 
 INSERT INTO sales (sales_id, phone, stock_id, model_id, amountPaid, sales_date) VALUES
-('SALE001', '9876543210', 'LAPTOP', 'MDL001', '78000', '2025-02-10');
+('SALE001', '9876543210', 'LAPTOP', 'MDL001', '655000', '2025-02-10');
 ```
 
 ---
@@ -132,7 +132,7 @@ WHERE YEAR(sales_date) = 2025;
 #### **Output:**
 | total_sales_2025 |
 |------------------|
-| 78000           |
+| 655000           |
 ```sql
 SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_sales_2025
 FROM sales
@@ -148,7 +148,7 @@ WHERE YEAR(purchaseDate) = 2025;
 #### **Output:**
 | total_purchase_2025 |
 |------------------|
-| 145000           |
+| 635000           |
 ```sql
 SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_purchase_2025
 FROM purchase
@@ -167,7 +167,7 @@ SELECT
 #### **Output:**
 | net_profit_loss |
 |----------------|
-| -67000        |
+| 20000        |
 ```sql
 SELECT 
     ( 
@@ -188,9 +188,9 @@ ORDER BY COUNT(*) DESC
 LIMIT 1;
 ```
 #### **Output:**
-| brand |
-|-------|
-| Dell  |
+| brand    |
+|----------|
+| Samsung  |
 ```sql
 SELECT p.brand
 FROM sales s

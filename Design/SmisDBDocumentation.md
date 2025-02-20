@@ -236,18 +236,7 @@ FROM product
 WHERE stock_id = 'SMARTPHONE' 
 AND ram = 8 
 AND price < 50000;
-```
-#### **Output:**
-| model_id | stock_id   | brand   | price | ram | rom | front_camera | rare_camera | os      | battery_backup | processor       | refresh_rate | brightness | body  |
-|----------|-----------|---------|-------|-----|-----|--------------|-------------|---------|----------------|----------------|--------------|------------|-------|
-| MDL008   | SMARTPHONE | OnePlus | 45000 | 8   | 128 | 16           | 48          | Android | 30             | Snapdragon 870  | 120          | 750        | Metal |
-```sql
-SELECT *
-FROM product
-WHERE stock_id = 'SMARTPHONE' 
-AND ram = 8 
-AND price < 50000;
-```
+ 
 
 ---
 

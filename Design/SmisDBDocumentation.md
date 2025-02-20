@@ -230,13 +230,56 @@ LIMIT 1;
 | stock_id |
 |----------|
 | LAPTOP   |
+
+---
+
+### 3.7 Stock-wise Total Sales & Total Purchase Amount
+```sql
+SELECT 
+    p.stock_id, 
+    SUM(CAST(s.amountPaid AS DECIMAL(10,2))) AS total_sales_amount,
+    SUM(CAST(p.amountPaid AS DECIMAL(10,2))) AS total_purchase_amount
+FROM purchase p
+LEFT JOIN sales s ON p.stock_id = s.stock_id
+GROUP BY p.stock_id;
+```
+#### **Output:**
+| stock_id   | total_sales_amount | total_purchase_amount |
+|------------|--------------------|------------------------|
+| LAPTOP     | 654000.00          | 633000.00             |
+| SMARTPHONE | 1008000.00         | 980000.00             |
+| TABLET     | 555000.00          | 537000.00             |
+```sql
+SELECT p.stock_id  
+FROM sales s  
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id  
+WHERE YEAR(s.sales_date) = 2025  
+GROUP BY p.stock_id  
+ORDER BY COUNT(*) ASC  
+LIMIT 1;
+```
+#### **Output:**
+| stock_id |
+|----------|
+| LAPTOP   |
 ```sql
 SELECT *
 FROM product
 WHERE stock_id = 'SMARTPHONE' 
 AND ram = 8 
 AND price < 50000;
- 
+```
+#### **Output:**
+| model_id | stock_id   | brand   | price | ram | rom | front_camera | rare_camera | os      | battery_backup | processor       | refresh_rate | brightness | body  |
+|----------|-----------|---------|-------|-----|-----|--------------|-------------|---------|----------------|----------------|--------------|------------|-------|
+| MDL008   | SMARTPHONE | OnePlus | 45000 | 8   | 128 | 16           | 48          | Android | 30             | Snapdragon 870  | 120          | 750        | Metal |
+```sql
+SELECT *
+FROM product
+WHERE stock_id = 'SMARTPHONE' 
+AND ram = 8 
+AND price < 50000;
+```
 
 ---
 

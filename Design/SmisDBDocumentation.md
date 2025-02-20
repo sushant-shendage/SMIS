@@ -1,26 +1,17 @@
 # Store Management & Information System (SMIS) Database Documentation
 
-## Table of Contents
-- [Database Overview](#database-overview)
-- [Table Structures](#table-structures)
-  - [Stock Table](#stock-table)
-  - [Product Table](#product-table)
-  - [Purchase Table](#purchase-table)
-  - [Customer Table](#customer-table)
-  - [Sales Table](#sales-table)
-- [Data Insertion Queries](#data-insertion-queries)
-- [Business Queries](#business-queries)
+## 1. Database Creation
+
+```sql
+CREATE DATABASE IF NOT EXISTS smis_db;
+USE smis_db;
+```
 
 ---
 
-## Database Overview
-The **Store Management & Information System (SMIS)** database is designed to track and manage stock items in a shop. It helps customers with decision-making based on product availability and features.
+## 2. Table Structures and Data Insertion
 
----
-
-## Table Structures
-
-### 1. Stock Table
+### 2.1 Stock Table
 ```sql
 CREATE TABLE stock (
   stock_id VARCHAR(40) NOT NULL,
@@ -28,38 +19,52 @@ CREATE TABLE stock (
   quantity INT CHECK (quantity >= 0),
   PRIMARY KEY (stock_id, model_id)
 );
+
+INSERT INTO stock (stock_id, model_id, quantity) VALUES
+('LAPTOP', 'MDL001', 50),
+('LAPTOP', 'MDL002', 30),
+('LAPTOP', 'MDL007', 15),
+('SMARTPHONE', 'MDL003', 20),
+('SMARTPHONE', 'MDL004', 40),
+('SMARTPHONE', 'MDL008', 45),
+('SMARTPHONE', 'MDL010', 55),
+('TABLET', 'MDL005', 25),
+('TABLET', 'MDL006', 35),
+('TABLET', 'MDL009', 10);
 ```
-#### **Constraints:**
-- `stock_id` and `model_id` form a composite primary key.
-- `quantity` must be zero or a positive integer.
 
 ---
 
-### 2. Product Table
+### 2.2 Product Table
 ```sql
 CREATE TABLE product (
   model_id VARCHAR(70),
   stock_id VARCHAR(70),
-  brand VARCHAR(70) NOT NULL,
-  price VARCHAR(70),
+  brand VARCHAR(70) NOT NULL,          
+  price VARCHAR(70),      
   ram INT,
-  rom INT,
+  rom INT,        
   front_camera INT CHECK (front_camera > 0),
-  rare_camera INT CHECK (rare_camera > 0),
-  os VARCHAR(70),
-  battery_backup INT CHECK (battery_backup > 0),
-  processor VARCHAR(70),
+  rare_camera INT CHECK (rare_camera > 0),  
+  os VARCHAR(70),        
+  battery_backup INT CHECK (battery_backup > 0),  
+  processor VARCHAR(70),            
   refresh_rate INT CHECK (refresh_rate > 0),
   brightness INT CHECK (brightness > 0),
   body VARCHAR(70),
   CONSTRAINT fk_constraint01 FOREIGN KEY (stock_id, model_id) 
-  REFERENCES stock(stock_id, model_id)
+  REFERENCES stock(stock_id, model_id) 
 );
+
+INSERT INTO product (model_id, stock_id, brand, price, ram, rom, front_camera, rare_camera, os, battery_backup, processor, refresh_rate, brightness, body) VALUES
+('MDL001', 'LAPTOP', 'Dell', '78000', 16, 512, NULL, NULL, 'Windows', 10, 'Intel i7', 144, 500, 'Metal'),
+('MDL002', 'LAPTOP', 'HP', '72000', 8, 512, NULL, NULL, 'Windows', 12, 'Intel i5', 120, 450, 'Plastic'),
+('MDL007', 'LAPTOP', 'Asus', '68000', 16, 256, NULL, NULL, 'Windows', 8, 'Ryzen 7', 144, 400, 'Metal');
 ```
 
 ---
 
-### 3. Purchase Table
+### 2.3 Purchase Table
 ```sql
 CREATE TABLE purchase (
   purchaseDate DATE NOT NULL,
@@ -72,11 +77,15 @@ CREATE TABLE purchase (
   CONSTRAINT fk_purchase_product FOREIGN KEY (stock_id, model_id) 
   REFERENCES product(stock_id, model_id)
 );
+
+INSERT INTO purchase (purchaseDate, agentFullName, stock_id, model_id, amountPaid, purchaseTransactionId, purchaseInfoId) VALUES
+('2025-02-01', 'John Doe', 'LAPTOP', 'MDL001', '75000', 'TRX001', 'PUR001'),
+('2025-02-02', 'Alice Smith', 'LAPTOP', 'MDL002', '70000', 'TRX002', 'PUR002');
 ```
 
 ---
 
-### 4. Customer Table
+### 2.4 Customer Table
 ```sql
 CREATE TABLE customer (
   name VARCHAR(100) NOT NULL,
@@ -86,11 +95,14 @@ CREATE TABLE customer (
   state VARCHAR(100) NOT NULL,
   address VARCHAR(100) NOT NULL
 );
+
+INSERT INTO customer (name, phone, area, city, state, address) VALUES
+('Rahul Sharma', '9876543210', 'MG Road', 'Bangalore', 'Karnataka', '123, MG Road, Bangalore');
 ```
 
 ---
 
-### 5. Sales Table
+### 2.5 Sales Table
 ```sql
 CREATE TABLE sales (
   sales_id VARCHAR(50) PRIMARY KEY,
@@ -102,86 +114,119 @@ CREATE TABLE sales (
   CONSTRAINT fk_sales_customer FOREIGN KEY (phone) 
   REFERENCES customer(phone)
 );
-```
 
----
-
-## Data Insertion Queries
-
-### Insert Data into `stock` Table
-```sql
-INSERT INTO stock (stock_id, model_id, quantity) VALUES
-('LAPTOP', 'MDL001', 50),
-('LAPTOP', 'MDL002', 30),
-('SMARTPHONE', 'MDL003', 100),
-('SMARTPHONE', 'MDL004', 80),
-('TABLET', 'MDL005', 60);
-```
-
-### Insert Data into `product` Table
-```sql
-INSERT INTO product (model_id, stock_id, brand, price, ram, rom, os, processor) VALUES
-('MDL001', 'LAPTOP', 'Dell', '75000', 16, 512, 'Windows', 'Intel i7'),
-('MDL002', 'LAPTOP', 'HP', '70000', 16, 256, 'Windows', 'Intel i5'),
-('MDL003', 'SMARTPHONE', 'Samsung', '53000', 8, 128, 'Android', 'Snapdragon 888'),
-('MDL004', 'SMARTPHONE', 'Apple', '118000', 6, 256, 'iOS', 'A15 Bionic'),
-('MDL005', 'TABLET', 'Lenovo', '39000', 6, 128, 'Android', 'MediaTek P22');
-```
-
-### Insert Data into `purchase` Table
-```sql
-INSERT INTO purchase (purchaseDate, agentFullName, stock_id, model_id, amountPaid, purchaseTransactionId, purchaseInfoId) VALUES
-('2025-02-01', 'John Doe', 'LAPTOP', 'MDL001', '75000', 'TRX001', 'PUR001'),
-('2025-02-02', 'Alice Smith', 'LAPTOP', 'MDL002', '70000', 'TRX002', 'PUR002');
-```
-
-### Insert Data into `customer` Table
-```sql
-INSERT INTO customer (name, phone, area, city, state, address) VALUES
-('Rahul Sharma', '9876543210', 'MG Road', 'Bangalore', 'Karnataka', '123, MG Road, Bangalore'),
-('Priya Verma', '8765432109', 'Sector 10', 'Delhi', 'Delhi', 'A-10, Sector 10, Delhi');
-```
-
-### Insert Data into `sales` Table
-```sql
 INSERT INTO sales (sales_id, phone, stock_id, model_id, amountPaid, sales_date) VALUES
-('SAL001', '9876543210', 'LAPTOP', 'MDL001', '78000', '2025-03-01'),
-('SAL002', '8765432109', 'SMARTPHONE', 'MDL003', '55000', '2025-03-05');
+('SALE001', '9876543210', 'LAPTOP', 'MDL001', '78000', '2025-02-10');
 ```
 
 ---
 
-## Business Queries
+## 3. Business Queries
 
-### Total Sales Amount for 2025
+### 3.1 Total Sales Amount in 2025
+```sql
+SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_sales_2025
+FROM sales
+WHERE YEAR(sales_date) = 2025;
+```
+#### **Output:**
+| total_sales_2025 |
+|------------------|
+| 78000           |
 ```sql
 SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_sales_2025
 FROM sales
 WHERE YEAR(sales_date) = 2025;
 ```
 
-### Total Purchase Amount for 2025
+### 3.2 Total Purchase Amount in 2025
+```sql
+SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_purchase_2025
+FROM purchase
+WHERE YEAR(purchaseDate) = 2025;
+```
+#### **Output:**
+| total_purchase_2025 |
+|------------------|
+| 145000           |
 ```sql
 SELECT SUM(CAST(amountPaid AS DECIMAL)) AS total_purchase_2025
 FROM purchase
 WHERE YEAR(purchaseDate) = 2025;
 ```
 
-### Net Profit/Loss Calculation
+### 3.3 Net Profit/Loss in 2025
 ```sql
 SELECT 
-    (
-        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
-         FROM sales 
-         WHERE YEAR(sales_date) = 2025) 
+    ( 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) FROM sales WHERE YEAR(sales_date) = 2025) 
         - 
-        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) 
-         FROM purchase 
-         WHERE YEAR(purchaseDate) = 2025) 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) FROM purchase WHERE YEAR(purchaseDate) = 2025) 
     ) AS net_profit_loss;
+```
+#### **Output:**
+| net_profit_loss |
+|----------------|
+| -67000        |
+```sql
+SELECT 
+    ( 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) FROM sales WHERE YEAR(sales_date) = 2025) 
+        - 
+        (SELECT COALESCE(SUM(CAST(amountPaid AS DECIMAL(10,2))), 0) FROM purchase WHERE YEAR(purchaseDate) = 2025) 
+    ) AS net_profit_loss;
+```
+
+### 3.4 Most Sold Product in 2025
+```sql
+SELECT p.brand
+FROM sales s
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id
+WHERE YEAR(s.sales_date) = 2025
+GROUP BY p.brand
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+```
+#### **Output:**
+| brand |
+|-------|
+| Dell  |
+```sql
+SELECT p.brand
+FROM sales s
+JOIN product p ON s.stock_id = p.stock_id AND s.model_id = p.model_id
+WHERE YEAR(s.sales_date) = 2025
+GROUP BY p.brand
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+```
+
+### 3.5 Available Smartphones with 8GB RAM and Price < 50K
+```sql
+SELECT *
+FROM product
+WHERE stock_id = 'SMARTPHONE' 
+AND ram = 8 
+AND price < 50000;
+```
+#### **Output:**
+| model_id | stock_id   | brand   | price | ram | rom | front_camera | rare_camera | os      | battery_backup | processor       | refresh_rate | brightness | body  |
+|----------|-----------|---------|-------|-----|-----|--------------|-------------|---------|----------------|----------------|--------------|------------|-------|
+| MDL008   | SMARTPHONE | OnePlus | 45000 | 8   | 128 | 16           | 48          | Android | 30             | Snapdragon 870  | 120          | 750        | Metal |
+```sql
+SELECT *
+FROM product
+WHERE stock_id = 'SMARTPHONE' 
+AND ram = 8 
+AND price < 50000;
 ```
 
 ---
 
-## Conclusion
-This documentation provides a detailed overview of **SMIS Database**, including table structures, constraints, data insertion, and key business queries.
+## 4. Conclusion
+This document serves as a complete reference for the **SMIS (Store Management & Information System) Database**, including:
+- **Table structures and constraints** ensuring data integrity.
+- **Data insertion queries** for consistency.
+- **Business queries** for analyzing sales, purchases, and profitability.
+
+📌 *Use this documentation to maintain and improve the SMIS database efficiently.* 🚀
